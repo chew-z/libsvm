@@ -1,5 +1,5 @@
 % Another example of using SVM for linear regression
-% This is better one
+% This is better 
 
 clear all
  
