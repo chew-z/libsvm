@@ -1,9 +1,13 @@
 clear all
 
-load('interview_data.mat');
+load('20090102_20120629_nostockpnl.mat');
 ret1 = data.ret1;
-[num_stocks, num_dates] = size(ret1);
+[num_stocks1, num_dates1] = size(ret1);
 alphas = alpha_cube.values;
 [num_alphas, num_stocks, num_dates] = size(alphas);
 
-clear data alpha_cube
+if (num_stocks ~= num_stocks1 | num_dates ~= num_dates1)
+	warning('getData: dimensions of ret1 and alphas not equal.')''
+end
+
+clear data alpha_cube num_stocks1 num_dates1
