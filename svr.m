@@ -1,8 +1,9 @@
 function [p, r, tr] = svr(x, y, opt, backward, b, forward)
-% svr(..) - support vector regression
-%
+% svr(..) - support vector regression. trains svm and predicts y (returns) based on x (alpha positions)
+% returns vector of predicted returns (p), libsvm RMSE for each prediction (r), average error (tr)
+%  
 if nargin < 3, opt = ['-s 3 -t 0 -h 0 ']; end	% s - epsilon SVR, t - linear, h - shrinking, q - quiet
-if nargin < 4, backward = 60; 	end			% 
+if nargin < 4, backward = 20; 	end			% 
 if nargin < 5, b = backward+1; 	end			% here you start
 if nargin < 6, forward  = 0;	end
 
