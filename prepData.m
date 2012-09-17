@@ -9,14 +9,18 @@ if nargin < 7, lag = 1;				end		% lag from x to y
 if nargin < 8, t = 0;				end		% transform(x) 0 - no, 1 - sqrt, 2 - ln, 3 - 0.5(t(i) + t(i-1))	
 
 	range = [start_id:start_id+window_size-1];
-	% (alpha, stock, day) 			% alpha holdings of stock on day
+	% (alpha, stock, day) 						% alpha holdings of stock on day
 	X = alphas(:,stock,range);	
-	X = double(X);					% convert to double
-	X = reshape(X, num_alphas, window_size);	% convert into two dimensions
-	X(isnan(X)) = 0;				% set NaN -> zero  
-	X = X';							% transpose 
-	X = transform(X, t);			% transform X - remove outliers, average t-1, t-2, ...
-	x = X;							% & x = normalize(X);
+	X = double(X);								% convert to double
+	X = reshape(X, num_alphas, window_size);	% flatten into two dimensions
+	X = X';										% transpose 
+	X(isnan(X)) = 0;							% set NaN -> zero  
+	X = normalize(X);							% & x = normalize(X);
+	X(isnan(X)) = 0;							% set NaN -> zero again
+	if t > 0, X = transform(X, t);	end			% transform X - remove outliers, average t-1, t-2, ...
+	x = single(X);							
 	% (stock, day)
-	y = double(ret1(stock, range+lag))';	% convert to double and transform
+	Y = ret1(stock, range+lag)';				% 
+	Y(isnan(Y)) = 0;							% set NaN -> zero
+	y = single(Y);
 end

@@ -1,4 +1,4 @@
-function [p, r, tr] = svr(x, y, opt, backward, b, forward)
+function [p, r, tr, sv] = svr(x, y, opt, backward, b, forward)
 % svr(..) - support vector regression. trains svm and predicts y (returns) based on x (alpha positions)
 % returns vector of predicted returns (p), libsvm RMSE for each prediction (r), average error (tr)
 %  
@@ -12,9 +12,11 @@ if nargin < 6, forward  = 0;	end
 	e = length(y) - forward; 				% here you finish
 	r = zeros(length(y), 1);
 	p = zeros(length(y), 1);
+	sv = zeros(length(y), 1);				% number of SV's
 	err = zeros(3,1); % [accuracy, MSE, corrcoeff]
 		for i=b:e
-			model = svmtrain(y(training_range+i), x(training_range+i,:), opt); 
+			model = svmtrain(y(training_range+i), x(training_range+i,:), opt);
+			sv(i) =  model.totalSV;
 			[z, err,~] = svmpredict(y(prediction_range+i), x(prediction_range+i,:), model);
 			% r(i) = rmse(z, y(prediction_range+i));
 			r(i) = err(2);	

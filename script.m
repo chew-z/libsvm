@@ -3,20 +3,19 @@
 
 % getData;
 % matlabpool open
+getenv('OMP_NUM_THREADS')
 
 format long
 tic;
-
+backward = 20;
 cost = [];
-err = [];
-pred = [];
-for C = -2
-	for epsilon = -1
-		[tr, r, z] = svr_tq2(alphas, ret1, 10^C, 10^epsilon);
+sv_t = [];
+for C = 3
+	for epsilon = 1
+		[z, r, tr, sv] = svr_tq2(alphas, ret1, C, epsilon/sqrt(backward));
 		costf(tr)
 		cost = [cost costf(tr)];
-		err = [err r];
-		pred = [pred z];
+		sv_t = [sv_t; mean(sv) / backward];
 	end
 end
 
@@ -25,4 +24,4 @@ pushover('script.m koniec',['Upłynęło: ' num2str(elapsed) 's. Najlepszy wynik
 
 format short
 
-clear C epsilon tr r elapsed
+clear C epsilon elapsed

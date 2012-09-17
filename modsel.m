@@ -21,7 +21,7 @@ bestg = 2^g_begin;
 i = 1; j = 1;
 for log2c = c_begin:c_step:c_end
     for log2g = g_begin:g_step:g_end
-        cmd = ['-q -v ',num2str(fold),' -c ',num2str(2^log2c),' -g ',num2str(2^log2g)];
+        cmd = ['-s 3 -t 3 -q -v ',num2str(fold),' -c ',num2str(2^log2c),' -g ',num2str(2^log2g)];
         % cmd = ['-s 4 -t 0 -h 0 -q' '-v 10 -c ' num2str(2^log2c) ' -p ' num2str(2^log2g) ];
         cv = svmtrain(label,inst,cmd);
         if (cv > bestcv) || ((cv == bestcv) && (2^log2c < bestc) && (2^log2g == bestg))

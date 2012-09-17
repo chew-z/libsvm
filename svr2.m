@@ -23,6 +23,7 @@ if nargin < 6, forward  = 0;	end
 			noise = std(y(training_range+i)) + eps;	% when volatility == 0; flat line
 		    cmd = ['-s 3 -t 0 -c ' num2str(opt.C * noise) ' -p ' num2str(opt.epsilon * noise) ' -q'];
 			model = svmtrain_chi2_float(y(training_range+i), x(training_range+i,:), cmd); 
+			sv(i) =  model.totalSV;
 			[z, err,~] = svmpredict_chi2_float(y(prediction_range+i), x(prediction_range+i,:), model);
 			% r(i) = rmse(z, y(prediction_range+i));
 			r(i) = err(2);	
