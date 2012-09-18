@@ -1,5 +1,6 @@
-function res = modsel_tq(y, x)
-%
+function res = modsel_tq(y, x, filename)
+% runs v-fold model training looking for optimal model parameters (C, epsilon)
+% if filename - save plot to file
 	best_rmse = 1;
 	best_e = 0;
 	best_C = 0;
@@ -35,5 +36,8 @@ function res = modsel_tq(y, x)
 	[X,Y] = meshgrid(xlin,ylin); 
 	mesh(X,Y, Z);
 	xlabel('epsilon'); ylabel('C');zlabel(['RMSE - stock ' ]);
-	figure(gcf);
+	if nargin == 3
+		h = figure(gcf);
+		print(h,'-dpng',filename);
+	end
 end

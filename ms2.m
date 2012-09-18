@@ -6,7 +6,8 @@ tic
 for i =1:length(stock)
 	[x, y] = prepData(alphas, ret1, stock(i), num_alphas, num_dates-1);
 	if sum(all(x)) > 0	% skip if empty x matrix (means all NaN or no holdings in that stock)
-		res = modsel_tq(double(y),double(x));
+		filename = ['linear_' num2str(i) '.png']
+		res = modsel_tq(double(y),double(x), filename);
 		r_linear(1,i) = res.RMSE;
 		r_linear(2,i) = res.C;
 		r_linear(3,i) = res.epsilon;
