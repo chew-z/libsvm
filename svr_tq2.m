@@ -13,13 +13,13 @@ function [z, r, tr, sv]  = svr_tq2(alphas, ret1, C, epsilon)
 
 	opt.C = C;
 	opt.epsilon = epsilon;
+	opt. kernel = 6;
 
 	z = zeros(nd, ns);
 	r = zeros(nd, ns);	% vectors o rmse per prediction, per stock
 	tr = zeros(ns,1);	% vector of rmse per stock
 	sv = zeros(nd,ns);
 	for stock = 1:ns
-
 		[x, y] = prepData(alphas, ret1, stock, num_alphas, nd, start_id, lag, t);
 		if sum(all(x)) > 0	% skip if empty x matrix (means all NaN or no holdings in that stock)
 			stock
