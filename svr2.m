@@ -1,16 +1,17 @@
-function [p, r, tr, sv] = svr2(x, y, opt, backward, b, forward)
+function [p, r, tr, sv] = svr2(x, y, opt, b, forward)
 % svr(..) - support vector regression. trains svm and predicts y (returns) based on x (alpha positions)
 % returns vector of predicted returns (p), libsvm RMSE for each prediction (r), average error (tr)
 % Adjusts epsilon and  C dynamically
 %  
 if nargin < 3 
 	opt.C = 1; 
-	opt.epsilon = 0.2;
+	opt.epsilon = 1;
 	opt.kernel =  2; 						% default kernel is rbf
+	opt.backward = 20;
 end	% 
-if nargin < 4, backward = 20; 	end			% 
-if nargin < 5, b = backward+1; 	end			% here you start
-if nargin < 6, forward  = 0;	end
+backward = opt.backward; 					% 
+if nargin < 4, b = backward+1; 	end			% here you start
+if nargin < 5, forward  = 0;	end
 
 	training_range = [-backward:-1];
 	prediction_range = [0:forward];
@@ -22,7 +23,7 @@ if nargin < 6, forward  = 0;	end
 	if isa(x,'single') & isa(y,'single')
 		for i=b:e
 			noise = std(y(training_range+i)) + eps;	% when volatility == 0; flat line
-		    cmd = ['-s 3 -t ' num2str(opt.kernel) ' -c ' num2str(opt.C * noise) ' -p ' num2str(opt.epsilon * noise) ' -q'];
+		    cmd = ['-s 3 -t ' num2str(opt.kernel) ' -c ' num2str(opt.C * noise) ' -p ' num2str(noise * opt.epsilon /sqrt(backward)) ' -q'];
 			model = svmtrain_chi2_float(y(training_range+i), x(training_range+i,:), cmd); 
 			sv(i) =  model.totalSV;
 			[z, err,~] = svmpredict_chi2_float(y(prediction_range+i), x(prediction_range+i,:), model);
@@ -33,7 +34,7 @@ if nargin < 6, forward  = 0;	end
 	else
 		for i=b:e
 			noise = std(y(training_range+i)) + eps;	% when volatility == 0; flat line
-			cmd = ['-s 3 -t ' num2str(opt.kernel) ' -c ' num2str(opt.C * noise) ' -p ' num2str(opt.epsilon * noise) ' -q'];
+			cmd = ['-s 3 -t ' num2str(opt.kernel) ' -c ' num2str(opt.C * noise) ' -p ' num2str(noise * opt.epsilon /sqrt(backward)) ' -q'];
 			model = svmtrain(y(training_range+i), x(training_range+i,:), cmd);
 			sv(i) =  model.totalSV;
 			[z, err,~] = svmpredict(y(prediction_range+i), x(prediction_range+i,:), model);
