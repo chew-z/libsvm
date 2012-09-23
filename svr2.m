@@ -6,6 +6,7 @@ function [p, r, tr, sv] = svr2(x, y, opt, b, forward)
 if nargin < 3 
 	opt.C = 1; 
 	opt.epsilon = 1;
+	opt.gamma = 0.05;
 	opt.kernel =  2; 						% default kernel is rbf
 	opt.backward = 20;
 end	% 
@@ -22,8 +23,10 @@ if nargin < 5, forward  = 0;	end
 	err = zeros(3,1); % [accuracy, MSE, corrcoeff]
 	if isa(x,'single') & isa(y,'single')
 		for i=b:e
+			med = mean(y(training_range+i));
 			noise = std(y(training_range+i)) + eps;	% when volatility == 0; flat line
-		    cmd = ['-s 3 -t ' num2str(opt.kernel) ' -c ' num2str(opt.C * noise) ' -p ' num2str(noise * opt.epsilon /sqrt(backward)) ' -q'];
+			C = max([abs(med + 2* noise), abs(med - 3 * noise)]);
+		    cmd = ['-s 3 -t ' num2str(opt.kernel) ' -g ' num2str(opt.gamma) ' -c ' num2str(opt.C * C) ' -p ' num2str(noise * opt.epsilon /sqrt(backward)) ' -q'];
 			model = svmtrain_chi2_float(y(training_range+i), x(training_range+i,:), cmd); 
 			sv(i) =  model.totalSV;
 			[z, err,~] = svmpredict_chi2_float(y(prediction_range+i), x(prediction_range+i,:), model);
@@ -33,8 +36,10 @@ if nargin < 5, forward  = 0;	end
 		end
 	else
 		for i=b:e
+			med = median(y(training_range+i));
 			noise = std(y(training_range+i)) + eps;	% when volatility == 0; flat line
-			cmd = ['-s 3 -t ' num2str(opt.kernel) ' -c ' num2str(opt.C * noise) ' -p ' num2str(noise * opt.epsilon /sqrt(backward)) ' -q'];
+			C = max([abs(med + 2* noise), abs(med - 3 * noise)]);
+			cmd = ['-s 3 -t ' num2str(opt.kernel) ' -g ' num2str(opt.gamma) ' -c ' num2str(opt.C * C) ' -p ' num2str(noise * opt.epsilon /sqrt(backward)) ' -q'];
 			model = svmtrain(y(training_range+i), x(training_range+i,:), cmd);
 			sv(i) =  model.totalSV;
 			[z, err,~] = svmpredict(y(prediction_range+i), x(prediction_range+i,:), model);
@@ -44,8 +49,8 @@ if nargin < 5, forward  = 0;	end
 		end
 	end
 	if forward == 0		% not vector of errors but total rmse/mape for entire loop
-		tr = rmse(z,y); 
+		tr = mape(z,y); 
 	else
-		tr = rmse(p,y); % p is prediction y(t) unless we set otherwise in the code
+		tr = mape(p,y); % p is prediction y(t) unless we set otherwise in the code
 	end	% not vector of errors but total rmse/mape for all predictions
 end
