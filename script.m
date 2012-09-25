@@ -1,26 +1,24 @@
-% script for finding optimal C and epsilon
-% all the parameters other beeing equal 
+% script running prediction and then strategy
+% with weights proportional to predicted returns
 
 % getData;
 % matlabpool open
-getenv('OMP_NUM_THREADS')
+% getenv('OMP_NUM_THREADS')
 
-format long
 tic;
-backward = 20;
-cost = [];
-sv_t = [];
-for C = 1
-	for epsilon = 1
-		[z, r, tr, sv] = svr_tq2(alphas, ret1, C, epsilon/sqrt(backward));
-		costf(tr)
-		cost = [cost costf(tr)];
-		sv_t = [sv_t; mean(sv) / backward];
-	end
-end
+% cost = [];
+% sv_t = [];
+opt.backward = 40;
+opt.kernel = 6;
+opt.C = 1;
+opt.epsilon = 1;
+[z, r, ~, ~] = svr_tq2(alphas, ret1, opt);
+% costf(tr)
+% cost = [cost costf(tr)];
+% sv_t = [sv_t; mean(sv) / backward];
 
 elapsed = toc;
-pushover('script.m koniec',['Upłynęło: ' num2str(elapsed) 's. Najlepszy wynik to ' num2str(min(cost)) ])
+pushover('script.m koniec',['Upłynęło: ' num2str(elapsed) 's. ' ])
 
 % normalize alpha weights
 sum_weights = nansum(abs(z'), 1);
@@ -37,9 +35,7 @@ clear alpha_weights_matrix alpha_values
 
 load('20090102_20120629_nostockpnl.mat');
 
-
 [simres] = op_simulate(data, final_alpha);
 clear data 
 
-format short
 clear C epsilon elapsed

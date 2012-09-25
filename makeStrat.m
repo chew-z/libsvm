@@ -7,13 +7,13 @@
 
 % clear alpha_cube
 
-numalphas = size(alpha_values,1);    % number of alphas
-numstocks = size(alpha_values,2);    % number of stocks
-numdates = size(alpha_values,3);     % number of days
+% num_alphas = size(alpha_values,1);    % number of alphas
+% num_stocks = size(alpha_values,2);    % number of stocks
+% num_dates = size(alpha_values,3);     % number of days
 
 % normalize alpha weights
 sum_weights = nansum(abs(z'), 1);
-alpha_weights_matrix = z' ./ repmat(sum_weights, [4722,1]);
+alpha_weights_matrix = z' ./ repmat(sum_weights, [num_stocks,1]);
 
 
 % then cap

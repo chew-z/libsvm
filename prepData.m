@@ -15,9 +15,10 @@ if nargin < 8, t = 0;				end		% transform(x) 0 - no, 1 - sqrt, 2 - ln, 3 - 0.5(t
 	X = reshape(X, num_alphas, window_size);	% flatten into two dimensions
 	X = X';										% transpose 
 	X(isnan(X)) = 0;							% set NaN -> zero  
-	X = normalize(X);							% & x = normalize(X);
-	X(isnan(X)) = 0;							% set NaN -> zero again
+	% X = outliers(X);							% remove outliers
 	if t > 0, X = transform(X, t);	end			% transform X - remove outliers, average t-1, t-2, ...
+	X = normalize(X);							% & x = normalize(X);
+	% X(isnan(X)) = 0;							% set NaN -> zero again
 	x = single(X);							
 	% (stock, day)
 	Y = ret1(stock, range+lag)';				% 
