@@ -1,5 +1,5 @@
 function res = outliers(d)
-% removes outliers
+% One of attempts to remove outliers. But frankly, I don't like this code 
 	z = 3;
 	meanM = mean(d);
 	sigmaM = std(d);

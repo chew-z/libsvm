@@ -1,7 +1,7 @@
 function [z, r, tr, sv]  = svr_tq2(alphas, ret1, opt)
 % svr_tq2(..) - predicts returns based on vector of alpha positions in that stock
 % returns total error (tr), vector of svr errors (r), predicted returns (z)
-%
+% It simply loops over all stocks in dataset using prepData and svr2
 	if nargin < 3
 		opt. kernel = 2;			
 		opt.C = C;	opt.epsilon = epsilon;

@@ -1,4 +1,4 @@
-% This script takes positions of some all alphas in particular stock 
+% This script takes positions of all alphas in particular stock 
 % and attempts to predicts return of that stocks. 
 % Plots results.
 

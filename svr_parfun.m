@@ -1,6 +1,6 @@
 function tr = svr_parfun(x, y, a)
 % passes SVM parameters as a vector of variables a
-% for optimization
+% for optimization (GA)
 	opt.gamma = a(1);
 	opt.C = a(2); 
 	opt.epsilon = a(3);

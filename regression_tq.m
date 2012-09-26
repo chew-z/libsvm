@@ -1,5 +1,6 @@
 % This script takes mean returns of some alphas from M and forecasts mean returns 
 % for some other alpha. Plots results.
+% Mostly just testing svr2
 tic;
 stock = 188;
 [x, y] = prepData(alphas, ret1, stock, num_alphas, num_dates-1);

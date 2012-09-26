@@ -1,6 +1,7 @@
 % script for finding optimal C and epsilon
-% all other parameters beeing equal 
-
+% all other parameters being equal 
+% Interesting visualization - plots surface of error against C and epsilon
+ 
 % getData;
 % matlabpool open
 % getenv('OMP_NUM_THREADS')

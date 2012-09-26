@@ -1,4 +1,7 @@
 function res = modsel_tq2(y, x)
+% modsel_tq2 - grid search for optimum values of gamma and C 
+% other parameters like kernel, window size etc. are set explicite in a code (opt)
+% returns some useful info like mape, rmse, number of support vectors, best parameters etc.
 	best_mape = 100;
 	best_rmse = 10;
 	best_e = 0;

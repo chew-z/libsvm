@@ -1,9 +1,7 @@
-% script researching optimal C, epsilon on random probe
+% script researching optimal C, epsilon on random probe of stocks
+% it calls modsel_tq N times for different stock. Can take some time. 
 N = 50;
-% stock = randi(num_stocks,N,1);
-
-stock = [3221];
-
+stock = randi(num_stocks,N,1);
 r_linear = zeros(3, N);
 tic
 for i =1:length(stock)

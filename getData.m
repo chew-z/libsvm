@@ -1,3 +1,5 @@
+% This script loads simply the data, extracts stock holdings (alphas) and stock returns(ret1)
+% clears unused variables to save memory
 clear all
 
 load('20090102_20120629_nostockpnl.mat');

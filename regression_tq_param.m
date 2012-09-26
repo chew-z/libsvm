@@ -1,5 +1,5 @@
 % Try different parametrs with SVR (C, epsilon)
-% 
+% Early attempts to use libsvm. Not important.
 
 y = M(62:end, 1);
 numalphas = 25;
