@@ -41,7 +41,7 @@ if nargin < 5, forward  = 0;	end
 		end
 	else
 		for i=b:e
-			med = median(y(training_range+i));
+			med = mean(y(training_range+i));
 			noise = std(y(training_range+i)) + eps;	% when volatility == 0; flat line
 			C = max([abs(med + 2* noise), abs(med - 3 * noise)]);
 			cmd = ['-s 3 -t ' num2str(opt.kernel) ' -g ' num2str(opt.gamma) ' -c ' num2str(opt.C * C) ' -p ' num2str(noise * opt.epsilon /sqrt(backward)) ' -q'];

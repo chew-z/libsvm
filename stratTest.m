@@ -19,7 +19,7 @@
     opt.lag = 1;
     opt.t = 0;
     [z, ~, ~, ~] = svr_tq2(alphas, ret1, opt);      % z = returns predicted by SVM
-    % M = zeros(num_dates,num_alphas);                % mean returns
+    % M = zeros(num_dates,num_alphas);              % mean returns
     CV = zeros(num_alphas, num_alphas, num_dates);  % covariance matrix 
     M = [zeros(1,num_stocks); z];
     alpha_weights_matrix = zeros(num_stocks, num_dates); % consists of alpha weights per alpha, per day

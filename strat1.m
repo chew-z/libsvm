@@ -1,4 +1,4 @@
-
+tic;
 	getData
 
     opt.kernel = 2;     opt.gamma = 0.767;    % kernel used (6 - chi2), gamma
@@ -6,10 +6,10 @@
     opt.start_id = 1;   opt.backward = 40;    % start of simulation and rolling window
     opt.lag = 1;        opt.t = 0;            % 
 
-    for di=opt.backward+1
+    for di=opt.backward+1:num_dates
         evaluation_window=max(di-opt.backward+1,1):di;
         P = ret1(:, evaluation_window);
-        CV = covm(P');  % using NaN Toolbox
+        CV = covCor(P');  % 
         CV(isnan(CV)) = 0;
         M = zeros(1, num_stocks); 
 		for stock = 1:num_stocks
@@ -21,15 +21,12 @@
 		I = M ~=0;
 		m = M(I);
 		cv = double(CV(I,I));
+		% portopt(m, cv, 5)		% This is really slow
 
 		% [~, ~, ~, weight_tang] = tangency(m, cv, 5, 0.0);
-		[i_tang, sharpe, Sigma, mu] = ef2(m, cv, 0, 5, 0.00001);
-		% [sharpe, sigma, mu] = minvar(m, cv);
-		% n = length(mu);
-		% iS = pinv(cv);
-		% weights = (iS * ones(n,1)) / (ones(1,n) * iS * ones(n,1));
-		% w = zeros(num_stocks,1);
-		% w(I) = weights;
+		[w_tang, i_tang, sharpe, Sigma, mu] = ef2(m, cv, 0, 5, 0.00001);
+		w = zeros(num_stocks,1);
+		w(I) = w_tang;
     end
-
+toc
     clear P stock di evaluation_window
