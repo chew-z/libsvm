@@ -22,7 +22,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
     alpha_weights_matrix = zeros(num_stocks, num_dates);
     final_alpha = zeros(num_stocks, num_dates);
     tic
-    for di=opt.start_id:num_dates-1
+    for di=opt.start_id:num_dates-opt.lag
         disp(['Step ' num2str(di)])
         tStart = tic;
         evaluation_window=max(di-opt.backward+1,1):di;
