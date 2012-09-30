@@ -4,7 +4,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
     file_name = '20090102_20120629_nostockpnl.mat';
     opt.kernel = 2;     opt.gamma = 0.767;    % kernel used (6 - chi2), gamma
     opt.C = 1;          opt.epsilon = 0.02;   % C & epsilon parameter of SVM
-    opt.start_id = 1;   opt.backward = 40;    % start of simulation and rolling window
+    opt.start_id = 801;   opt.backward = 40;    % start of simulation and rolling window
     opt.lag = 1;        opt.t = 0;            %  
     % get data from data & alpha_cube.values
     %get a handle to the HDF5 filesystem
@@ -22,7 +22,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
     alpha_weights_matrix = zeros(num_stocks, num_dates);
     final_alpha = zeros(num_stocks, num_dates);
     tic
-    for di=800+1:num_dates
+    for di=opt.start_id:num_dates-1
         disp(['Step ' num2str(di)])
         evaluation_window=max(di-opt.backward+1,1):di;
         P = ret1(:, evaluation_window);
@@ -30,7 +30,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
         CV(isnan(CV)) = 0;
         M = zeros(1, num_stocks); 
         for stock = 1:num_stocks
-            [x, y] = prepData(alphas, ret1, stock, num_alphas, di, opt.start_id, opt.lag, opt.t);
+            [x, y] = prepData(alphas, ret1, stock, num_alphas, opt.backward, di-opt.backward, opt.lag, opt.t);
             [z, ~, ~, ~] = svr2(x, y, opt);
             M(stock) = z(di);
         end
@@ -39,11 +39,11 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
         m = M(I);
         cv = double(CV(I,I));
         % portopt(m, cv, 5)     % This is really slow
-        [~, ~, ~, w_tang] = tangency(m, cv, 5, 0.0);
-        % [w_tang, i_tang, sharpe, Sigma, mu] = ef2(m, cv, 0, 5, 0.00001);
+        % [~, ~, ~, w_tang] = tangency(m, cv, 5, 0.0);
+        [w_tang, ~, ~, ~, ~] = ef2(m, cv, 0, 5, 0.00001);
         alpha_weights_matrix(I, di) = w_tang;
     end
     elapsed = toc
-    pushover('Koniec testu', ['Minęło ' num2str(elapsed) ' s.')
+    pushover('Koniec testu', ['Minęło ' num2str(elapsed) ' s.'])
     final_alpha = single(alpha_weights_matrix);
 end
