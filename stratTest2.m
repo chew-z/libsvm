@@ -24,6 +24,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
     tic
     for di=800+1:num_dates
         disp(['Step ' num2str(di)])
+        tStart = tic;
         evaluation_window=max(di-opt.backward+1,1):di;
         P = ret1(:, evaluation_window);
         CV = covCor(P');  % 
@@ -42,8 +43,10 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
         [~, ~, ~, w_tang] = tangency(m, cv, 5, 0.0);
         % [w_tang, i_tang, sharpe, Sigma, mu] = ef2(m, cv, 0, 5, 0.00001);
         alpha_weights_matrix(I, di) = w_tang;
+        tElapsed = toc(tStart)
+        pushover('Koniec kroku', ['Minęło ' num2str(tElapsed) ' s.'])
     end
     elapsed = toc
-    pushover('Koniec testu', ['Minęło ' num2str(elapsed) ' s.')
+    pushover('Koniec testu', ['Minęło ' num2str(elapsed) ' s.'])
     final_alpha = single(alpha_weights_matrix);
 end
