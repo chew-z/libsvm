@@ -22,7 +22,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
     alpha_weights_matrix = zeros(num_stocks, num_dates);
     final_alpha = zeros(num_stocks, num_dates);
     tic
-    for di=opt.start_id:num_dates-1
+    for di=opt.start_id:num_dates-opt.lag
         disp(['Step ' num2str(di)])
         tStart = tic;
         evaluation_window=max(di-opt.backward+1,1):di;
@@ -31,9 +31,9 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
         CV(isnan(CV)) = 0;
         M = zeros(1, num_stocks); 
         for stock = 1:num_stocks
-            [x, y] = prepData(alphas, ret1, stock, num_alphas, opt.backward, di-opt.backward, opt.lag, opt.t);
+            [x, y] = prepData(alphas, ret1, stock, num_alphas, opt.backward+opt.lag, di-opt.backward, opt.lag, opt.t);
             [z, ~, ~, ~] = svr2(x, y, opt);
-            M(stock) = z(di);
+            M(stock) = z(end);
         end
 
         I = M ~=0;
@@ -44,7 +44,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest()
         [w_tang, ~, ~, ~, ~] = ef2(m, cv, 0, 5, 0.00001);
         alpha_weights_matrix(I, di) = w_tang;
         tElapsed = toc(tStart)
-        pushover('Koniec kroku', ['Minęło ' num2str(tElapsed) ' s.'])
+        % pushover('Koniec kroku', ['Minęło ' num2str(tElapsed) ' s.'])
     end
     elapsed = toc
     pushover('Koniec testu', ['Minęło ' num2str(elapsed) ' s.'])
