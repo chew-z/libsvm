@@ -1,13 +1,12 @@
-function [M CV] = stratTest()
+function [ final_alpha alpha_weights_matrix] = stratTest()
 % sample strategy 
     
     file_name = '20090102_20120629_nostockpnl.mat';
-    
     opt.kernel = 2;     opt.gamma = 0.767;    % kernel used (6 - chi2), gamma
     opt.C = 1;          opt.epsilon = 0.02;   % C & epsilon parameter of SVM
     opt.start_id = 1;   opt.backward = 40;    % start of simulation and rolling window
     opt.lag = 1;        opt.t = 0;            %  
-
+    % get data from data & alpha_cube.values
     %get a handle to the HDF5 filesystem
     fileinfo = h5info(file_name);
     % stock returns (= predicted variable y)
@@ -19,27 +18,32 @@ function [M CV] = stratTest()
     if (num_stocks ~= num_stocks1 | num_dates ~= num_dates1)
         warning('getData: dimensions of ret1 and alphas not equal.')''
     end
-
-    for di=opt.start_id+1:num_dates
+    % 
+    alpha_weights_matrix = zeros(num_stocks, num_dates);
+    final_alpha = zeros(num_stocks, num_dates);
+    tic
+    for di=800+1:num_dates
+        disp(['Step ' num2str(di)])
         evaluation_window=max(di-opt.backward+1,1):di;
         P = ret1(:, evaluation_window);
-        CV = cov(P'); 
+        CV = covCor(P');  % 
+        CV(isnan(CV)) = 0;
+        M = zeros(1, num_stocks); 
+        for stock = 1:num_stocks
+            [x, y] = prepData(alphas, ret1, stock, num_alphas, di, opt.start_id, opt.lag, opt.t);
+            [z, ~, ~, ~] = svr2(x, y, opt);
+            M(stock) = z(di);
+        end
+
+        I = M ~=0;
+        m = M(I);
+        cv = double(CV(I,I));
+        % portopt(m, cv, 5)     % This is really slow
+        [~, ~, ~, w_tang] = tangency(m, cv, 5, 0.0);
+        % [w_tang, i_tang, sharpe, Sigma, mu] = ef2(m, cv, 0, 5, 0.00001);
+        alpha_weights_matrix(I, di) = w_tang;
     end
-
-    % [z, ~, ~, ~] = svr_tq2(alphas, ret1, opt);      % z = returns predicted by SVM
-    % M = zeros(num_dates,num_alphas);              % mean returns
-    % M = [zeros(1,num_stocks); z];
-    M = zeros(1,num_stocks);
-    % alpha_weights_matrix = zeros(num_stocks, num_dates); % consists of alpha weights per alpha, per day
-    % % normalize alpha weights
-    % sum_weights = nansum(abs(M'), 1);
-    % alpha_weights_matrix = M' ./ repmat(sum_weights, [num_stocks,1]);
-    % % then cap
-    % max_weight=.1;   % maximum alpha weight is 10% of all weights
-    % over_weight = (alpha_weights_matrix > max_weight);
-    % alpha_weights_matrix(over_weight) = max_weight;
-    % alpha_weights_matrix(~isfinite(alpha_weights_matrix)) = 0;
-    % % final alpha 
-    % final_alpha = single(alpha_weights_matrix);
-
+    elapsed = toc
+    pushover('Koniec testu', ['Minęło ' num2str(elapsed) ' s.')
+    final_alpha = single(alpha_weights_matrix);
 end
