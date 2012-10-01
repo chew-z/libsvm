@@ -1,5 +1,5 @@
 function res = modsel_tq(y, x, filename)
-% runs v-fold model training looking for optimal model parameters (C, epsilon)
+% runs v-FOLD model training searching for optimal model parameters (C, epsilon)
 % if filename - save plot to file
 	best_rmse = 1;
 	best_e = 0;

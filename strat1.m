@@ -1,3 +1,6 @@
+% This script is more or less the same as stratTest2.m 
+% given covariance matrix and predicted stock returns it attempts to find 
+% some optimal portfolio
 tic;
 	getData
 

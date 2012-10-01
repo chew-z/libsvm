@@ -1,10 +1,13 @@
 function [ final_alpha alpha_weights_matrix] = stratTest2q()
-% sample strategy 
-    
+% stratTest2q - finds some optimal portfolio given extimated covariance matrix
+% and SVR predicted returns.
+% This is quick version with optimized loop size. Takes ca 30 sec per time step on my machine 
+% With minor changes in code one could predict more then one timestep ahead.
+
     file_name = '20090102_20120629_nostockpnl.mat';
     opt.kernel = 2;     opt.gamma = 0.767;    % kernel used (6 - chi2), gamma
     opt.C = 1;          opt.epsilon = 0.02;   % C & epsilon parameter of SVM
-    opt.start_id = 801;   opt.backward = 40;    % start of simulation and rolling window
+    opt.start_id = 41;   opt.backward = 40;   % start of simulation and rolling window
     opt.lag = 1;        opt.t = 0;            %  
     % get data from data & alpha_cube.values
     %get a handle to the HDF5 filesystem
@@ -21,6 +24,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest2q()
     % 
     alpha_weights_matrix = zeros(num_stocks, num_dates);
     final_alpha = zeros(num_stocks, num_dates);
+    % find portfolio weights in timesteps
     tic
     for di=opt.start_id:num_dates-opt.lag
         disp(['Step ' num2str(di)])
@@ -35,7 +39,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest2q()
             [z, ~, ~, ~] = svr2(x, y, opt);
             M(stock) = z(end);
         end
-
+        % lower the dimensionality removing irrelevant stocks
         I = M ~=0;
         m = M(I);
         cv = double(CV(I,I));
@@ -44,9 +48,9 @@ function [ final_alpha alpha_weights_matrix] = stratTest2q()
         [w_tang, ~, ~, ~, ~] = ef2(m, cv, 0, 5, 0.00001);
         alpha_weights_matrix(I, di) = w_tang;
         tElapsed = toc(tStart)
-        % pushover('Koniec kroku', ['Minęło ' num2str(tElapsed) ' s.'])
+        % pushover('Timestep finished', ['Passed ' num2str(tElapsed) ' s.'])
     end
     elapsed = toc
-    pushover('Koniec testu', ['Minęło ' num2str(elapsed) ' s.'])
+    pushover('stratTest2q finished', ['Passed ' num2str(elapsed) ' s.'])
     final_alpha = single(alpha_weights_matrix);
 end

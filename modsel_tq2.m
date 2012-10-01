@@ -22,7 +22,7 @@ function res = modsel_tq2(y, x)
 	    	epsilon = 1;
 	    	opt.gamma = 10^gam;
 	    	opt.C = C;                          % C parameter of SVM
-    		opt.epsilon = epsilon;                 % epsilon parameter of SVM
+    		opt.epsilon = epsilon;              % epsilon parameter of SVM
 			[z, r, tr, sv] = svr2(double(x),double(y), opt);
 	        if tr < best_mape
 	        	best_rmse = max(r); 
