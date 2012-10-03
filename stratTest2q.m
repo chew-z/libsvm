@@ -7,7 +7,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest2q()
     file_name = '20090102_20120629_nostockpnl.mat';
     opt.kernel = 2;     opt.gamma = 0.767;    % kernel used (6 - chi2), gamma
     opt.C = 1;          opt.epsilon = 0.02;   % C & epsilon parameter of SVM
-    opt.start_id = 41;   opt.backward = 40;   % start of simulation and rolling window
+    opt.start_id = 841;   opt.backward = 40;   % start of simulation and rolling window
     opt.lag = 1;        opt.t = 0;            %  
     % get data from data & alpha_cube.values
     %get a handle to the HDF5 filesystem
@@ -52,5 +52,7 @@ function [ final_alpha alpha_weights_matrix] = stratTest2q()
     end
     elapsed = toc
     pushover('stratTest2q finished', ['Passed ' num2str(elapsed) ' s.'])
-    final_alpha = single(alpha_weights_matrix);
+    sum_weights=nansum(alpha_weights_matrix,1);
+    alpha_weights_matrix=alpha_weights_matrix ./ repmat(sum_weights,[num_stocks,1]);
+   final_alpha = single(alpha_weights_matrix);
 end
